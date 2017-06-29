@@ -7,6 +7,8 @@
 #include <uwb_reloc_msgs/RelativeInfoStamped.h>
 #include <uwb_reloc_msgs/TwistWithDistanceStamped.h>
 
+#include <string>
+
 #define no_of_uav 3
 #define control_rate 20
 
@@ -15,6 +17,7 @@ std::string uav_name = "uav_0";
 std::string message_header = "[UAV_RELOC_CTRL]";
 
 int uav_id = 0;
+std::string uav_id_str;
 
 double delta_t = 0.5; //sec
 double epsilon_1 = 1.0;
@@ -37,10 +40,12 @@ double vel_cmd_lim_min[2] = {-0.5, -0.5};
 
 //Subscribers and Publishers
 std::string topic_sub_states = "/common/vicon/uav_states";
-std::string topic_pub_vel_ctrl = "/copter/velocity_cmd";
+std::string topic_pub_vel_ctrl = "/uav_0/cmd_vel";
+std::string topic_pub_vel_cmd_common = "/common/cmd_vel";
 
 ros::Subscriber sub_states;
 ros::Publisher pub_vel_cmd;
+ros::Publisher pub_vel_cmd_common;
 
 // State-machine functions
 int initialize();
@@ -63,6 +68,8 @@ int main(int argc, char** argv){
 	nh_param.param<std::string>("uav_name", uav_name, uav_name);
 	nh_param.param<int>("uav_id", uav_id, uav_id);
 	nh_param.param<std::string>("topic_sub_states", topic_sub_states, topic_sub_states);
+  nh_param.param<std::string>("topic_pub_vel_ctrl", topic_pub_vel_ctrl, topic_pub_vel_ctrl);
+  nh_param.param<std::string>("topic_pub_vel_cmd_common", topic_pub_vel_cmd_common, topic_pub_vel_cmd_common);
 	nh_param.param<double>("delta_t", delta_t, delta_t);
 	nh_param.param<double>("epsilon_1", epsilon_1, epsilon_1);
 	nh_param.param<double>("epsilon_2", epsilon_2, epsilon_2);
@@ -70,6 +77,7 @@ int main(int argc, char** argv){
 
 	sub_states = nh.subscribe<uwb_reloc_msgs::RelativeInfoStamped>(topic_sub_states, 10, states_cb);
 	pub_vel_cmd = nh.advertise<geometry_msgs::TwistStamped>(topic_pub_vel_ctrl, 10);
+  pub_vel_cmd_common = nh.advertise<geometry_msgs::TwistStamped>(topic_pub_vel_cmd_common, 10);
 
 	if (initialize() != 0) return 1;
 	ROS_WARN("%s: Initialized. UAV_ID: %d", message_header.c_str(), uav_id);
@@ -146,6 +154,11 @@ void states_cb(const uwb_reloc_msgs::RelativeInfoStamped state){
 }
 
 int initialize(){
+  //Get UAV_id in string
+  std::ostringstream convert;
+  convert << uav_id;
+  uav_id_str = convert.str();
+
 	//Stupidity check: UAV_id is greater than (UAV_number - 1). Return 1 to indicate problem.
 	if (uav_id > (no_of_uav - 1)){
 		ROS_ERROR("%s: uav_id greater than number of UAV. Invalid. Exit!", message_header.c_str());
@@ -277,8 +290,11 @@ void publish_velocity_commands(){
 	vel_cmd_msg.twist.angular.x = 0.0;
 	vel_cmd_msg.twist.angular.y = 0.0;
 	vel_cmd_msg.twist.angular.z = 0.0;
-	vel_cmd_msg.header.stamp = ros::Time::now();
-	pub_vel_cmd.publish(vel_cmd_msg);
+  vel_cmd_msg.header.frame_id = uav_id_str;
+  vel_cmd_msg.header.stamp = ros::Time::now();
+
+  pub_vel_cmd.publish(vel_cmd_msg);
+  pub_vel_cmd_common.publish(vel_cmd_msg);
 }
 
 bool is_timeout(ros::Time stamp_1, ros::Time stamp_2, double timeout){
