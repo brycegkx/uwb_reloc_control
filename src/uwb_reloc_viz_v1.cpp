@@ -11,6 +11,7 @@
 
 #include <uwb_reloc_msgs/RelativeInfoStamped.h>
 #include <uwb_reloc_msgs/uwbTalkData.h>
+#include <uwb_reloc/uwbTalkData.h>
 
 
 #define no_of_uav 3
@@ -21,7 +22,7 @@ std::string node_name = "uwb_reloc_viz";
 //Subscribers and Publishers
 std::string topic_sub_uav_info = "/rlForUAV";
 std::string topic_sub_uav_cmd = "/common/cmd_vel";
-std::string topic_pub_markers = "/markers";
+std::string topic_pub_markers = "/visualization_marker_array";
 
 ros::Subscriber sub_uav_info;
 ros::Subscriber sub_uav_cmd;
@@ -40,7 +41,7 @@ double uav_cmd_mag[no_of_uav];
 
 
 //Callback functions
-void uav_info_cb(const uwb_reloc_msgs::uwbTalkData info);
+void uav_info_cb(const uwb_reloc::uwbTalkData info);
 void uav_cmd_cb(const geometry_msgs::TwistStamped cmd);
 
 int main(int argc, char** argv){
@@ -52,7 +53,7 @@ int main(int argc, char** argv){
   nh_param.param<std::string>("topic_sub_uav_cmd", topic_sub_uav_cmd, topic_sub_uav_cmd);
   nh_param.param<std::string>("topic_pub_markers", topic_pub_markers, topic_pub_markers);
 
-  sub_uav_info = nh.subscribe<uwb_reloc_msgs::uwbTalkData>(topic_sub_uav_info, 10, uav_info_cb);
+  sub_uav_info = nh.subscribe<uwb_reloc::uwbTalkData>(topic_sub_uav_info, 10, uav_info_cb);
   sub_uav_cmd = nh.subscribe<geometry_msgs::TwistStamped>(topic_sub_uav_cmd, 10, uav_cmd_cb);
   pub_markers = nh.advertise<visualization_msgs::MarkerArray>(topic_pub_markers, 10);
 
@@ -64,30 +65,43 @@ int main(int argc, char** argv){
     visualization_msgs::Marker temp_vel_marker;
     visualization_msgs::Marker temp_cmd_marker;
     for (int i=0; i < no_of_uav; i++){
-      ros::Time common_stamp = ros::Time::now();
+      ros::Time common_stamp = ros::Time();
       //Position as red sphere
       temp_pos_marker.header.stamp = common_stamp;
+      temp_pos_marker.header.frame_id = "base_link";
       temp_pos_marker.type = visualization_msgs::Marker::SPHERE;
       temp_pos_marker.pose.position = uav_pos[i];
+      temp_pos_marker.scale.x = 0.05;
+      temp_pos_marker.scale.y = 0.05;
+      temp_pos_marker.scale.z = 0.05;
       temp_pos_marker.color.r = 1.0;
+      temp_pos_marker.color.a = 0.5;
       marker_array.markers.push_back(temp_pos_marker);
 
       //Velocity as red arrow
       temp_vel_marker.header.stamp = common_stamp;
+      temp_vel_marker.header.frame_id = "base_link";
       temp_vel_marker.type = visualization_msgs::Marker::ARROW;
       temp_vel_marker.pose.position = uav_pos[i];
       temp_vel_marker.pose.orientation = uav_vel_dir[i];
-      temp_vel_marker.scale.z = uav_vel_mag[i];
+      temp_vel_marker.scale.y = 0.05;
+      temp_vel_marker.scale.z = 0.05;
+      temp_vel_marker.scale.x = uav_vel_mag[i];
       temp_vel_marker.color.r = 1.0;
+      temp_vel_marker.color.a = 1.0;
       marker_array.markers.push_back(temp_vel_marker);
 
       //Command as blue arrow
       temp_cmd_marker.header.stamp = common_stamp;
+      temp_cmd_marker.header.frame_id = "base_link";
       temp_cmd_marker.type = visualization_msgs::Marker::ARROW;
       temp_cmd_marker.pose.position = uav_pos[i];
       temp_cmd_marker.pose.orientation = uav_cmd_dir[i];
-      temp_cmd_marker.scale.z = uav_cmd_mag[i];
+      temp_cmd_marker.scale.y = 0.05;
+      temp_cmd_marker.scale.z = 0.05;
+      temp_cmd_marker.scale.x = uav_cmd_mag[i];
       temp_cmd_marker.color.b = 1.0;
+      temp_cmd_marker.color.a = 1.0;
       marker_array.markers.push_back(temp_cmd_marker);
     }
     pub_markers.publish(marker_array);
@@ -99,7 +113,7 @@ int main(int argc, char** argv){
   return 0;
 }
 
-void uav_info_cb(const uwb_reloc_msgs::uwbTalkData info){
+void uav_info_cb(const uwb_reloc::uwbTalkData info){
   int temp_id = 0;
   geometry_msgs::Point temp_pos;
   geometry_msgs::Vector3 temp_vel;
@@ -109,6 +123,7 @@ void uav_info_cb(const uwb_reloc_msgs::uwbTalkData info){
   double temp_magnitude;
   //Requester
   temp_id = info.rqstrId;
+  ROS_INFO("Here: %d", temp_id);
   if (temp_id < no_of_uav){
     temp_pos.x = info.rqstr_x;
     temp_pos.y = info.rqstr_y;
@@ -120,7 +135,7 @@ void uav_info_cb(const uwb_reloc_msgs::uwbTalkData info){
     temp_yaw_angle = atan2(temp_vel.y, temp_vel.x);
     temp_magnitude = sqrt(temp_vel.y * temp_vel.y + temp_vel.x * temp_vel.x);
 
-    temp_quat_tf.setEuler(temp_yaw_angle, 0.0, 0.0);
+    temp_quat_tf.setEuler(0.0, 0.0, temp_yaw_angle);
     tf::quaternionTFToMsg(temp_quat_tf, temp_quat);
 
     uav_pos[temp_id] = temp_pos;
@@ -141,7 +156,7 @@ void uav_info_cb(const uwb_reloc_msgs::uwbTalkData info){
     temp_yaw_angle = atan2(temp_vel.y, temp_vel.x);
     temp_magnitude = sqrt(temp_vel.y * temp_vel.y + temp_vel.x * temp_vel.x);
 
-    temp_quat_tf.setEuler(temp_yaw_angle, 0.0, 0.0);
+    temp_quat_tf.setEuler(0.0, 0.0, temp_yaw_angle);
     tf::quaternionTFToMsg(temp_quat_tf, temp_quat);
 
     uav_pos[temp_id] = temp_pos;
@@ -160,13 +175,13 @@ void uav_cmd_cb(const geometry_msgs::TwistStamped cmd){
   double temp_magnitude;
   if (temp_id < no_of_uav){
     temp_cmd.x = cmd.twist.linear.x;
-    temp_cmd.y = cmd.twist.linear.x;
-    temp_cmd.z = cmd.twist.linear.x;
+    temp_cmd.y = cmd.twist.linear.y;
+    temp_cmd.z = cmd.twist.linear.z;
 
     temp_yaw_angle = atan2(temp_cmd.y, temp_cmd.x);
     temp_magnitude = sqrt(temp_cmd.y * temp_cmd.y + temp_cmd.x * temp_cmd.x);
 
-    temp_quat_tf.setEuler(temp_yaw_angle, 0.0, 0.0);
+    temp_quat_tf.setEuler(0.0, 0.0, temp_yaw_angle);
     tf::quaternionTFToMsg(temp_quat_tf, temp_quat);
 
     uav_cmd[temp_id] = temp_cmd;
