@@ -109,8 +109,8 @@ void states_cb(const uwb_reloc_msgs::RelativeInfoStamped state){
 		othr_info.uav_id = rspdr_id;
 		othr_info.abs_vel = state.rspdrVel;
 		othr_info.rel_pos.x = state.rlpos_RqstToRspdr.x;
-		othr_info.rel_pos.y = state.rlpos_RqstToRspdr.x;
-		othr_info.rel_pos.z = state.rlpos_RqstToRspdr.x;
+    othr_info.rel_pos.y = state.rlpos_RqstToRspdr.y;
+    othr_info.rel_pos.z = state.rlpos_RqstToRspdr.z;
 		othr_info.distance = state.distance;
 
 		//Update self state
@@ -133,8 +133,8 @@ void states_cb(const uwb_reloc_msgs::RelativeInfoStamped state){
 		othr_info.uav_id = rqstr_id;
 		othr_info.abs_vel = state.rqstrVel;
 		othr_info.rel_pos.x = -state.rlpos_RqstToRspdr.x;
-		othr_info.rel_pos.y = -state.rlpos_RqstToRspdr.x;
-		othr_info.rel_pos.z = -state.rlpos_RqstToRspdr.x;
+    othr_info.rel_pos.y = -state.rlpos_RqstToRspdr.y;
+    othr_info.rel_pos.z = -state.rlpos_RqstToRspdr.z;
 		othr_info.distance = state.distance;
 
 		//Update self state
@@ -232,6 +232,7 @@ void calculate_control_setpoints(){
 				sum_rel_vel[1] += 0.0; 
 				sum_rel_pos[0] += 0.0;
 				sum_rel_pos[1] += 0.0; 
+        ROS_INFO("TO");
 			} else {
 				// Valid
 				self_vel[0] = self_state.abs_vel.x;
