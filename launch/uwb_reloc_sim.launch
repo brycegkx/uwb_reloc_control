@@ -2,9 +2,9 @@
     <master auto="start"/>
 
     <arg name="delta_t" default="0.5"/>
-    <arg name="epsilon_1" default="1.0"/>
-    <arg name="epsilon_2" default="0.007"/>
-    <arg name="kappa" default="1.0"/>
+    <arg name="epsilon_1" default="0.10"/>
+    <arg name="epsilon_2" default="0.0007"/>
+    <arg name="kappa" default="0.1"/>
 
     <arg name="topic_pub_vel_cmd_common" default="/common/velocity"/>
     <arg name="topic_sub_states" default="scan"/>
