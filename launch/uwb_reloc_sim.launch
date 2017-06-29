@@ -1,0 +1,62 @@
+<launch>
+    <master auto="start"/>
+
+    <arg name="delta_t" default="0.5"/>
+    <arg name="epsilon_1" default="0.1"/>
+    <arg name="epsilon_2" default="1.0"/>
+    <arg name="kappa" default="1.0"/>
+
+    <arg name="topic_pub_vel_cmd_common" default="/common/velocity"/>
+    <arg name="topic_sub_states" default="scan"/>
+
+    <!-- UAV 0 -->
+    <node pkg="uwb_reloc_control" type="uwb_reloc_control_node" name="uwb_reloc_control_uav_0"
+        required="true" clear_params="true" output="screen">
+        <param name="uav_name" value="uav_0" />
+        <param name="uav_id" value="0" />
+        <param name="topic_sub_states" value="/rlForUAV" />
+        <param name="topic_pub_vel_ctrl" value="/uav_0/cmd_vel" />
+        <param name="topic_pub_vel_cmd_common" value="/common/cmd_vel" />
+        <param name="delta_t" value="$(arg delta_t)" />
+        <param name="epsilon_1" value="$(arg epsilon_1)" />
+        <param name="epsilon_2" value="$(arg epsilon_2)" />
+        <param name="kappa" value="$(arg kappa)" />
+    </node>
+
+    <!-- UAV 1 -->
+    <node pkg="uwb_reloc_control" type="uwb_reloc_control_node" name="uwb_reloc_control_uav_1"
+        required="true" clear_params="true" output="screen">
+        <param name="uav_name" value="uav_1" />
+        <param name="uav_id" value="1" />
+        <param name="topic_sub_states" value="/rlForUAV" />
+        <param name="topic_pub_vel_ctrl" value="/uav_1/cmd_vel" />
+        <param name="topic_pub_vel_cmd_common" value="/common/cmd_vel" />
+        <param name="delta_t" value="$(arg delta_t)" />
+        <param name="epsilon_1" value="$(arg epsilon_1)" />
+        <param name="epsilon_2" value="$(arg epsilon_2)" />
+        <param name="kappa" value="$(arg kappa)" />
+    </node>
+
+    <!-- UAV 2 -->
+    <node pkg="uwb_reloc_control" type="uwb_reloc_control_node" name="uwb_reloc_control_uav_2"
+        required="true" clear_params="true" output="screen">
+        <param name="uav_name" value="uav_2" />
+        <param name="uav_id" value="2" />
+        <param name="topic_sub_states" value="/rlForUAV" />
+        <param name="topic_pub_vel_ctrl" value="/uav_2/cmd_vel" />
+        <param name="topic_pub_vel_cmd_common" value="/common/cmd_vel" />
+        <param name="delta_t" value="$(arg delta_t)" />
+        <param name="epsilon_1" value="$(arg epsilon_1)" />
+        <param name="epsilon_2" value="$(arg epsilon_2)" />
+        <param name="kappa" value="$(arg kappa)" />
+    </node>
+
+    <!-- VISUALIZATION -->
+    <node pkg="uwb_reloc_control" type="uwb_reloc_visualization_node" name="uwb_reloc_viz"
+        required="true" clear_params="true" output="screen">
+        <param name="topic_sub_uav_info" value="/rlForUAV" />
+        <param name="topic_sub_uav_cmd" value="/common/cmd_vel" />
+        <param name="topic_pub_markers" value="/markers" />
+    </node>
+
+</launch>
