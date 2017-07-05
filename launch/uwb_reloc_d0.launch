@@ -3,6 +3,9 @@
 <launch>
 	<master auto="start"/>
 
+	<arg name="uav_name" default="uav_0"/>
+	<arg name="uav_id" default="0"/>
+
     <arg name="delta_t" default="0.5"/>
     <arg name="epsilon_1" default="0.10"/>
     <arg name="epsilon_2" default="0.0007"/>
@@ -10,7 +13,7 @@
 
     <arg name="topic_pub_vel_cmd_common" default="/common/velocity"/>
     <arg name="topic_sub_states" default="scan"/>
-    
+
 	<rosparam param="/uwb_reloc_talk_node/mobsId"> [200, 201, 202]</rosparam>
 	<rosparam param="/uwb_reloc_algo_node/albega"> [1.0, -0.29, 200]</rosparam>
 
@@ -60,10 +63,10 @@
   	<!-- Relative Localization - Control -->
     <node pkg="uwb_reloc_control" type="uwb_reloc_control_node" name="uwb_reloc_control_uav_0"
         required="true" clear_params="true" output="screen">
-        <param name="uav_name" value="uav_0" />
-        <param name="uav_id" value="0" />
+        <param name="uav_name" value="$(arg uav_name)" />
+        <param name="uav_id" value="$(arg uav_id)" />
         <param name="topic_sub_states" value="/rlForControl" />
-        <param name="topic_pub_vel_ctrl" value="/uav_0/cmd_vel" />
+        <param name="topic_pub_vel_ctrl" value="/$(arg uav_name)/cmd_vel" />
         <param name="topic_pub_vel_cmd_common" value="/common/cmd_vel" />
         <param name="delta_t" value="$(arg delta_t)" />
         <param name="epsilon_1" value="$(arg epsilon_1)" />
@@ -74,7 +77,7 @@
   	<!-- Message Translator -->
     <node pkg="uwb_reloc_control" type="msg_translator_node" name="msg_translator_node"
         required="true" clear_params="true" output="screen">
-        <param name="topic_sub_vel_command" value="/copter/command/velocity" />
+        <param name="topic_sub_vel_command" value="/$(arg uav_name)/cmd_vel" />
         <param name="topic_pub_vel_update" value="/copter/velocity" />
         <param name="topic_pub_pos_update" value="/copter/position" />
         <param name="timeout_pose_update" value="1.0" />
