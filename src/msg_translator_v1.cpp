@@ -157,7 +157,7 @@ void prepare_msgs(){
 		vel_command_msg.twist.linear.y = last_vel_command.twist.linear.y;
 		if (disable_z_vel_cmd) { vel_command_msg.twist.linear.z = 0.0; }
 		else { vel_command_msg.twist.linear.z = last_vel_command.twist.linear.z; }
-		flag_vel_update_timeout = false;
+		flag_vel_command_timeout = false;
 	}
 }
 

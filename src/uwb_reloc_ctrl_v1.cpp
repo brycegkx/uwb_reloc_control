@@ -232,7 +232,7 @@ void calculate_control_setpoints(){
 				sum_rel_vel[1] += 0.0; 
 				sum_rel_pos[0] += 0.0;
 				sum_rel_pos[1] += 0.0; 
-        // ROS_INFO("TO");
+        	// ROS_INFO("TO");
 			} else {
 				// Valid
 				self_vel[0] = self_state.abs_vel.x;
@@ -291,11 +291,11 @@ void publish_velocity_commands(){
 	vel_cmd_msg.twist.angular.x = 0.0;
 	vel_cmd_msg.twist.angular.y = 0.0;
 	vel_cmd_msg.twist.angular.z = 0.0;
-  vel_cmd_msg.header.frame_id = uav_id_str;
-  vel_cmd_msg.header.stamp = ros::Time::now();
+  	vel_cmd_msg.header.frame_id = uav_id_str;
+  	vel_cmd_msg.header.stamp = ros::Time::now();
 
-  pub_vel_cmd.publish(vel_cmd_msg);
-  pub_vel_cmd_common.publish(vel_cmd_msg);
+  	pub_vel_cmd.publish(vel_cmd_msg);
+  	pub_vel_cmd_common.publish(vel_cmd_msg);
 }
 
 bool is_timeout(ros::Time stamp_1, ros::Time stamp_2, double timeout){
