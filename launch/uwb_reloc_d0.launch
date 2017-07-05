@@ -45,6 +45,9 @@
 		<param name="logInput" type="bool" value="true" />
 		<param name="logOutput" type="bool" value="true" />
 		<param name="syncFCC" type="bool" value="true" />
+
+		<param name="topic_px4VelSub" type="string" value="/$(arg uav_name)/estimate/velocity" />
+		<param name="topic_px4PosSub" type="string" value="/$(arg uav_name)/estimate/position" />
 	</node>
 
   	<!-- Relative Localization - Estimation -->
@@ -78,15 +81,21 @@
     <node pkg="uwb_reloc_control" type="msg_translator_node" name="msg_translator_node"
         required="true" clear_params="true" output="screen">
         <param name="topic_sub_vel_command" value="/$(arg uav_name)/cmd_vel" />
-        <param name="topic_pub_vel_update" value="/copter/velocity" />
-        <param name="topic_pub_pos_update" value="/copter/position" />
+        <param name="topic_sub_pos_update" value="/$(arg uav_name)/mavros/local_position/pose" />
+        <param name="topic_sub_vel_update" value="/$(arg uav_name)/mavros/local_position/velocity" />
+
+        <param name="topic_pub_pos_update" value="/$(arg uav_name)/estimate/position" />
+        <param name="topic_pub_vel_update" value="/$(arg uav_name)/estimate/velocity" />
+        <param name="topic_pub_vel_command" value="/$(arg uav_name)/mavros/setpoint_velocity/cmd_vel" />
+
         <param name="timeout_pose_update" value="1.0" />
         <param name="timeout_vel_update" value="1.0" />
         <param name="timeout_vel_command" value="1.0" />
     </node>
 
     <!-- MAVROS -->
-    <node pkg="mavros" type="mavros_node" name="mavros" required="true" clear_params="true" output="screen">
+    <node ns="$(arg uav_name)" pkg="mavros" type="mavros_node" name="mavros" 
+    	required="true" clear_params="true" output="screen">
         <param name="fcu_url" value="/dev/px4:921600" />
         <param name="gcs_url" value="udp://14550@127.0.0.1:14556" />
         <param name="target_system_id" value="1" />

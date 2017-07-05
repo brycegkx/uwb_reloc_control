@@ -9,14 +9,17 @@
 std::string node_name = "message_translator";
 std::string msg_header = "[MSG TRANS]";
 int publish_rate = 10; //Hz
+std::string uav_name = "uav_0";
+std::string uav_id_str = "0";
+int uav_id = 0;
 
 //Subscriber & Publisher
-std::string topic_sub_pos_update = "/mavros/local_position/pose";
-std::string topic_sub_vel_update = "/mavros/local_position/velocity";
-std::string topic_sub_vel_command = "/copter/command/velocity";
-std::string topic_pub_vel_command = "/mavros/setpoint_velocity/cmd_vel";
-std::string topic_pub_vel_update = "/copter/velocity";
-std::string topic_pub_pos_update = "/copter/position";
+std::string topic_sub_pos_update = "/uav_0/mavros/local_position/pose";
+std::string topic_sub_vel_update = "/uav_0/mavros/local_position/velocity";
+std::string topic_sub_vel_command = "/uav_0/cmd_vel";
+std::string topic_pub_vel_command = "/uav_0/mavros/setpoint_velocity/cmd_vel";
+std::string topic_pub_vel_update = "/uav_0/velocity";
+std::string topic_pub_pos_update = "/uav_0/position";
 
 ros::Subscriber sub_pos_update;
 ros::Subscriber sub_vel_update;
@@ -64,6 +67,8 @@ int main(int argc, char** argv){
 	ros::NodeHandle nh;
 	ros::NodeHandle nh_param("~");
 
+	nh_param.param<std::string>("uav_name", uav_name, uav_name);
+	nh_param.param<int>("uav_id", uav_id, uav_id);
 	nh_param.param<std::string>("topic_sub_pos_update", topic_sub_pos_update, topic_sub_pos_update);
 	nh_param.param<std::string>("topic_sub_vel_update", topic_sub_vel_update, topic_sub_vel_update);
 	nh_param.param<std::string>("topic_sub_vel_command", topic_sub_vel_command, topic_sub_vel_command);
@@ -117,6 +122,10 @@ void vel_command_cb(const geometry_msgs::TwistStamped _vel_cmd){
 }
 
 int initialize(){
+	//Get UAV_id in string
+	std::ostringstream convert;
+	convert << uav_id;
+	uav_id_str = convert.str();
 
 	return 0;
 }
