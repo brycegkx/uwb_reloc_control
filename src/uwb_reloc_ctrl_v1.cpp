@@ -232,7 +232,7 @@ void calculate_control_setpoints(){
 				sum_rel_vel[1] += 0.0; 
 				sum_rel_pos[0] += 0.0;
 				sum_rel_pos[1] += 0.0; 
-        ROS_INFO("TO");
+        // ROS_INFO("TO");
 			} else {
 				// Valid
 				self_vel[0] = self_state.abs_vel.x;
