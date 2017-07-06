@@ -51,7 +51,7 @@
 	</node>
 
   	<!-- Relative Localization - Estimation -->
-	<node respawn="true" pkg="uwb_reloc" type="reloc_algo_node" name="uwb_reloc_algo_node" output="screen">
+	<node respawn="true" pkg="uwb_reloc" type="reloc_algo_node" name="uwb_reloc_algo_node" output="log">
 		<param name="nodeRate" type="int" value="50"/>
 		<param name="velNoise" type="double" value="0.2"/>
 		<param name="initCovariance" type="double" value="0.0001"/>
