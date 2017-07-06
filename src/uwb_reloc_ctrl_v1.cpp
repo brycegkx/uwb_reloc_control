@@ -26,7 +26,8 @@ double kappa = 1.0;
 
 uwb_reloc_msgs::TwistWithDistanceStamped uav_states[no_of_uav];
 double desired_distance[no_of_uav];
-double uniform_distance = 1.5; //meters
+bool uniform_formation = true;
+double uniform_distance = 4.0; //meters
 
 double acc_sp[2] = {0.0, 0.0};
 double vel_sp[2] = {0.0, 0.0};
@@ -74,6 +75,9 @@ int main(int argc, char** argv){
 	nh_param.param<double>("epsilon_1", epsilon_1, epsilon_1);
 	nh_param.param<double>("epsilon_2", epsilon_2, epsilon_2);
 	nh_param.param<double>("kappa", kappa, kappa);
+
+	nh_param.param<bool>("uniform_formation", uniform_formation, uniform_formation);
+	nh_param.param<double>("uniform_distance", uniform_distance, uniform_distance);
 
 	sub_states = nh.subscribe<uwb_reloc_msgs::RelativeInfoStamped>(topic_sub_states, 10, states_cb);
 	pub_vel_cmd = nh.advertise<geometry_msgs::TwistStamped>(topic_pub_vel_ctrl, 10);

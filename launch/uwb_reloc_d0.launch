@@ -11,6 +11,9 @@
     <arg name="epsilon_2" default="0.07"/>
     <arg name="kappa" default="0.1"/>
 
+    <arg name="uniform_formation" default="true"/>
+    <arg name="uniform_distance" default="4.0"/>
+
     <arg name="topic_pub_vel_cmd_common" default="/common/velocity"/>
     <arg name="topic_sub_states" default="scan"/>
 
@@ -71,10 +74,14 @@
         <param name="topic_sub_states" value="/rlForControl" />
         <param name="topic_pub_vel_ctrl" value="/$(arg uav_name)/cmd_vel" />
         <param name="topic_pub_vel_cmd_common" value="/common/cmd_vel" />
+
         <param name="delta_t" value="$(arg delta_t)" />
         <param name="epsilon_1" value="$(arg epsilon_1)" />
         <param name="epsilon_2" value="$(arg epsilon_2)" />
         <param name="kappa" value="$(arg kappa)" />
+
+        <param name="uniform_formation" value="$(arg uniform_formation)" />
+        <param name="uniform_distance" value="$(arg uniform_distance)" />
     </node>
 
   	<!-- Message Translator -->
