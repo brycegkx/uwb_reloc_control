@@ -266,11 +266,11 @@ void calculate_control_setpoints(){
 		acc_sp[0] = epsilon_1 * kappa * sum_rel_vel[0] + 2 * epsilon_2 * sum_rel_pos[0];
 		acc_sp[1] = epsilon_1 * kappa * sum_rel_vel[1] + 2 * epsilon_2 * sum_rel_pos[1];
 
-		vel_sp[0] = vel_sp[0] + acc_sp[0] * delta_t;
-		vel_sp[1] = vel_sp[1] + acc_sp[1] * delta_t;
+		vel_sp[0] = self_vel[0] + acc_sp[0] * delta_t;
+		vel_sp[1] = self_vel[1] + acc_sp[1] * delta_t;
 
-		pos_sp[0] = pos_sp[0] + pos_sp[0] * delta_t;
-		pos_sp[1] = pos_sp[1] + pos_sp[1] * delta_t;
+		// pos_sp[0] = pos_sp[0] + pos_sp[0] * delta_t;
+		// pos_sp[1] = pos_sp[1] + pos_sp[1] * delta_t;
 	} else {
 		reset_control_setpoints();
 	}
