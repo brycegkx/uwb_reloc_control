@@ -12,7 +12,7 @@
     <arg name="kappa" default="0.1"/>
 
     <arg name="uniform_formation" default="true"/>
-    <arg name="uniform_distance" default="4.0"/>
+    <arg name="uniform_distance" default="2.0"/>
 
     <arg name="topic_pub_vel_cmd_common" default="/common/velocity"/>
     <arg name="topic_sub_states" default="scan"/>
