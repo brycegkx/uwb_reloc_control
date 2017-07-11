@@ -26,7 +26,8 @@ double kappa = 1.0;
 
 uwb_reloc_msgs::TwistWithDistanceStamped uav_states[no_of_uav];
 double desired_distance[no_of_uav];
-double uniform_distance = 1.5; //meters
+bool uniform_formation = true;
+double uniform_distance = 4.0; //meters
 
 double acc_sp[2] = {0.0, 0.0};
 double vel_sp[2] = {0.0, 0.0};
@@ -68,16 +69,19 @@ int main(int argc, char** argv){
 	nh_param.param<std::string>("uav_name", uav_name, uav_name);
 	nh_param.param<int>("uav_id", uav_id, uav_id);
 	nh_param.param<std::string>("topic_sub_states", topic_sub_states, topic_sub_states);
-  nh_param.param<std::string>("topic_pub_vel_ctrl", topic_pub_vel_ctrl, topic_pub_vel_ctrl);
-  nh_param.param<std::string>("topic_pub_vel_cmd_common", topic_pub_vel_cmd_common, topic_pub_vel_cmd_common);
+  	nh_param.param<std::string>("topic_pub_vel_ctrl", topic_pub_vel_ctrl, topic_pub_vel_ctrl);
+  	nh_param.param<std::string>("topic_pub_vel_cmd_common", topic_pub_vel_cmd_common, topic_pub_vel_cmd_common);
 	nh_param.param<double>("delta_t", delta_t, delta_t);
 	nh_param.param<double>("epsilon_1", epsilon_1, epsilon_1);
 	nh_param.param<double>("epsilon_2", epsilon_2, epsilon_2);
 	nh_param.param<double>("kappa", kappa, kappa);
 
+	nh_param.param<bool>("uniform_formation", uniform_formation, uniform_formation);
+	nh_param.param<double>("uniform_distance", uniform_distance, uniform_distance);
+
 	sub_states = nh.subscribe<uwb_reloc_msgs::RelativeInfoStamped>(topic_sub_states, 10, states_cb);
 	pub_vel_cmd = nh.advertise<geometry_msgs::TwistStamped>(topic_pub_vel_ctrl, 10);
-  pub_vel_cmd_common = nh.advertise<geometry_msgs::TwistStamped>(topic_pub_vel_cmd_common, 10);
+  	pub_vel_cmd_common = nh.advertise<geometry_msgs::TwistStamped>(topic_pub_vel_cmd_common, 10);
 
 	if (initialize() != 0) return 1;
 	ROS_WARN("%s: Initialized. UAV_ID: %d", message_header.c_str(), uav_id);
@@ -232,7 +236,7 @@ void calculate_control_setpoints(){
 				sum_rel_vel[1] += 0.0; 
 				sum_rel_pos[0] += 0.0;
 				sum_rel_pos[1] += 0.0; 
-        ROS_INFO("TO");
+        	// ROS_INFO("TO");
 			} else {
 				// Valid
 				self_vel[0] = self_state.abs_vel.x;
@@ -266,11 +270,11 @@ void calculate_control_setpoints(){
 		acc_sp[0] = epsilon_1 * kappa * sum_rel_vel[0] + 2 * epsilon_2 * sum_rel_pos[0];
 		acc_sp[1] = epsilon_1 * kappa * sum_rel_vel[1] + 2 * epsilon_2 * sum_rel_pos[1];
 
-		vel_sp[0] = vel_sp[0] + acc_sp[0] * delta_t;
-		vel_sp[1] = vel_sp[1] + acc_sp[1] * delta_t;
+		vel_sp[0] = self_vel[0] + acc_sp[0] * delta_t;
+		vel_sp[1] = self_vel[1] + acc_sp[1] * delta_t;
 
-		pos_sp[0] = pos_sp[0] + pos_sp[0] * delta_t;
-		pos_sp[1] = pos_sp[1] + pos_sp[1] * delta_t;
+		// pos_sp[0] = pos_sp[0] + pos_sp[0] * delta_t;
+		// pos_sp[1] = pos_sp[1] + pos_sp[1] * delta_t;
 	} else {
 		reset_control_setpoints();
 	}
@@ -291,11 +295,11 @@ void publish_velocity_commands(){
 	vel_cmd_msg.twist.angular.x = 0.0;
 	vel_cmd_msg.twist.angular.y = 0.0;
 	vel_cmd_msg.twist.angular.z = 0.0;
-  vel_cmd_msg.header.frame_id = uav_id_str;
-  vel_cmd_msg.header.stamp = ros::Time::now();
+  	vel_cmd_msg.header.frame_id = uav_id_str;
+  	vel_cmd_msg.header.stamp = ros::Time::now();
 
-  pub_vel_cmd.publish(vel_cmd_msg);
-  pub_vel_cmd_common.publish(vel_cmd_msg);
+  	pub_vel_cmd.publish(vel_cmd_msg);
+  	pub_vel_cmd_common.publish(vel_cmd_msg);
 }
 
 bool is_timeout(ros::Time stamp_1, ros::Time stamp_2, double timeout){
