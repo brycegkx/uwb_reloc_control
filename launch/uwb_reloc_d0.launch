@@ -18,7 +18,7 @@
     <arg name="topic_sub_states" default="scan"/>
 
 	<rosparam param="/uwb_reloc_talk_node/mobsId"> [200, 201, 202]</rosparam>
-	<rosparam param="/uwb_reloc_algo_node/albega"> [1.0, -0.29, 200]</rosparam>
+	<rosparam param="/uwb_reloc_algo_node/albega"> [1.0, 0.0, 200]</rosparam>
 
  	<!-- UWB Communication -->
 	<node respawn="true" pkg="uwb_reloc" type="uwb_talk_node" name="uwb_reloc_talk_node">
@@ -54,16 +54,15 @@
 	</node>
 
   	<!-- Relative Localization - Estimation -->
-	<node respawn="true" pkg="uwb_reloc" type="reloc_algo_node" name="uwb_reloc_algo_node" output="log">
-		<param name="nodeRate" type="int" value="50"/>
-		<param name="velNoise" type="double" value="0.2"/>
-		<param name="initCovariance" type="double" value="0.0001"/>
-		<param name="Rd" type="double" value="0.05"/>
-		<param name="T" type="double" value="0.04"/>
-		<param name="T" type="double" value="0.04"/>
-		<param name="epsilon1" type="double" value="1.0"/>
-		<param name="epsilon2" type="double" value="0.007"/>
-		<param name="logEnable" type="bool" value="true" />
+    	<node respawn="true" pkg="uwb_reloc" type="reloc_algo_node" name="uwb_reloc_algo_node" output="log">
+        <param name="nodeRate" type="int" value="50"/>
+        <param name="velNoise" type="double" value="0.2"/>
+        <param name="addNoise" type="bool" value="false" />
+        <param name="acc" type="double" value="3.0" />
+        <param name="initCovariance" type="double" value="0.0001"/>
+        <param name="Rd" type="double" value="0.05"/>
+        <param name="T" type="double" value="0.025"/>
+        <param name="logEnable" type="bool" value="true" />
 	</node>
 
   	<!-- Relative Localization - Control -->
