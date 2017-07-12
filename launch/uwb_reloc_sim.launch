@@ -2,12 +2,15 @@
     <master auto="start"/>
 
     <arg name="delta_t" default="0.5"/>
-    <arg name="epsilon_1" default="0.10"/>
-    <arg name="epsilon_2" default="0.0007"/>
-    <arg name="kappa" default="0.1"/>
+    <arg name="epsilon_1" default="1.0"/>
+    <arg name="epsilon_2" default="0.007"/>
+    <arg name="kappa" default="1.0"/>
 
     <arg name="topic_pub_vel_cmd_common" default="/common/velocity"/>
     <arg name="topic_sub_states" default="scan"/>
+
+    <arg name="uniform_formation" default="true"/>
+    <arg name="uniform_distance" default="3.0"/>
 
     <!-- UAV 0 -->
     <node pkg="uwb_reloc_control" type="uwb_reloc_control_node" name="uwb_reloc_control_uav_0"
@@ -21,6 +24,8 @@
         <param name="epsilon_1" value="$(arg epsilon_1)" />
         <param name="epsilon_2" value="$(arg epsilon_2)" />
         <param name="kappa" value="$(arg kappa)" />
+        <param name="uniform_formation" value="$(arg uniform_formation)" />
+        <param name="uniform_distance" value="$(arg uniform_distance)" />
     </node>
 
     <!-- UAV 1 -->
@@ -35,6 +40,8 @@
         <param name="epsilon_1" value="$(arg epsilon_1)" />
         <param name="epsilon_2" value="$(arg epsilon_2)" />
         <param name="kappa" value="$(arg kappa)" />
+        <param name="uniform_formation" value="$(arg uniform_formation)" />
+        <param name="uniform_distance" value="$(arg uniform_distance)" />
     </node>
 
     <!-- UAV 2 -->
@@ -49,7 +56,21 @@
         <param name="epsilon_1" value="$(arg epsilon_1)" />
         <param name="epsilon_2" value="$(arg epsilon_2)" />
         <param name="kappa" value="$(arg kappa)" />
+        <param name="uniform_formation" value="$(arg uniform_formation)" />
+        <param name="uniform_distance" value="$(arg uniform_distance)" />
     </node>
+
+  <node respawn="true" pkg="uwb_reloc" type="reloc_algo_node" name="uwb_reloc_algo_node" output="log">
+            <!-- configuration for the node -->
+    <param name="nodeRate" type="int" value="50"/>
+    <param name="velNoise" type="double" value="0.2"/>
+    <param name="addNoise" type="bool" value="false" />
+    <param name="acc" type="double" value="3.0" />
+    <param name="initCovariance" type="double" value="0.0001"/>
+    <param name="Rd" type="double" value="0.05"/>
+    <param name="T" type="double" value="0.025"/>
+    <param name="logEnable" type="bool" value="true" />
+  </node>
 
     <!-- VISUALIZATION -->
     <node pkg="uwb_reloc_control" type="uwb_reloc_visualization_node" name="uwb_reloc_viz"
@@ -58,5 +79,10 @@
         <param name="topic_sub_uav_cmd" value="/common/cmd_vel" />
         <param name="topic_pub_markers" value="/visualization_marker_array" />
     </node>
+
+    <!-- RVIZ -->
+    <node pkg="tf" type="static_transform_publisher" name="world_to_baselink" 
+        args="0 0 0 0 0 0 world base_link 100" output="log"/>
+    <node pkg="rviz" type="rviz" name="rviz" required="true" output="log"/>
 
 </launch>
