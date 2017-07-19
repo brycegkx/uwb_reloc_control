@@ -23,7 +23,8 @@
 	<rosparam param="/uwb_reloc_algo_node/albega"> [1.0, 0.0, 200]</rosparam>
 
  	<!-- UWB Communication -->
-	<node respawn="true" pkg="uwb_reloc" type="uwb_talk_node" name="uwb_reloc_talk_node_$(arg uav_name)">
+	<node ns="$(arg uav_name)" respawn="true" pkg="uwb_reloc" type="uwb_talk_node" 
+        name="uwb_reloc_talk_node">
         <!-- configuration for the node -->
 		<param name="nodeRate" type="int" value="50"/>
 		<param name="restEnable" type="bool" value="true"/>
@@ -57,7 +58,8 @@
 	</node>
 
     <!-- Relative Localization - Estimation -->
-        <node respawn="true" pkg="uwb_reloc" type="reloc_algo_node" name="uwb_reloc_algo_node_$(arg uav_name)" output="log">
+        <node ns="$(arg uav_name)" respawn="true" pkg="uwb_reloc" type="reloc_algo_node" 
+            name="uwb_reloc_algo_node" output="log">
         <param name="nodeRate" type="int" value="50"/>
         <param name="velNoise" type="double" value="0.2"/>
         <param name="addNoise" type="bool" value="false" />
@@ -72,8 +74,8 @@
     </node>
 
   	<!-- Relative Localization - Control -->
-    <node pkg="uwb_reloc_control" type="uwb_reloc_control_node" name="uwb_reloc_control_$(arg uav_name)"
-        required="true" clear_params="true" output="screen">
+    <node ns="$(arg uav_name)" pkg="uwb_reloc_control" type="uwb_reloc_control_node" 
+        name="uwb_reloc_control" required="true" clear_params="true" output="screen">
         <param name="uav_name" value="$(arg uav_name)" />
         <param name="uav_id" value="$(arg uav_id)" />
         <param name="topic_sub_states" value="/$(arg uav_name)/rlForControl" />
@@ -90,8 +92,8 @@
     </node>
 
   	<!-- Message Translator -->
-    <node pkg="uwb_reloc_control" type="msg_translator_node" name="msg_translator_node_$(arg uav_name)"
-        required="true" clear_params="true" output="screen">
+    <node ns="$(arg uav_name)" pkg="uwb_reloc_control" type="msg_translator_node" 
+        name="msg_translator_node" required="true" clear_params="true" output="screen">
         <param name="topic_sub_vel_command" value="/$(arg uav_name)/cmd_vel" />
         <param name="topic_sub_pos_update" value="/$(arg uav_name)/mavros/local_position/pose" />
         <param name="topic_sub_vel_update" value="/$(arg uav_name)/mavros/local_position/velocity" />
