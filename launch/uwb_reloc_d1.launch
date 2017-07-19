@@ -11,7 +11,7 @@
     <arg name="epsilon_2" default="0.07"/>
     <arg name="kappa" default="0.1"/>
 
-    <arg name="delta_t_est" default="0.04"/>
+    <arg name="delta_t_est" default="0.025"/>
 
     <arg name="uniform_formation" default="true"/>
     <arg name="uniform_distance" default="3.0"/>
@@ -69,7 +69,7 @@
 
         <param name="topic_rlForControl" type="string" value="/$(arg uav_name)/rlForControl"/>
     </node>
-    
+
     <!-- Relative Localization - Control -->
     <node pkg="uwb_reloc_control" type="uwb_reloc_control_node" name="uwb_reloc_control_$(arg uav_name)"
         required="true" clear_params="true" output="screen">

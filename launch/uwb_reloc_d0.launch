@@ -11,7 +11,7 @@
     <arg name="epsilon_2" default="0.07"/>
     <arg name="kappa" default="0.1"/>
 
-    <arg name="delta_t_est" default="0.04"/>
+    <arg name="delta_t_est" default="0.025"/>
 
     <arg name="uniform_formation" default="true"/>
     <arg name="uniform_distance" default="3.0"/>
