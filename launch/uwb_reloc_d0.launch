@@ -19,8 +19,8 @@
     <arg name="topic_pub_vel_cmd_common" default="/common/velocity"/>
     <arg name="topic_sub_states" default="scan"/>
 
-	<rosparam param="/uwb_reloc_talk_node/mobsId"> [200, 201, 202]</rosparam>
-	<rosparam param="/uwb_reloc_algo_node/albega"> [1.0, 0.0, 200]</rosparam>
+	<rosparam param="/$(arg uav_name)/uwb_reloc_talk_node/mobsId"> [200, 201, 202]</rosparam>
+	<rosparam param="/$(arg uav_name)/uwb_reloc_algo_node/albega"> [1.0, 0.0, 200]</rosparam>
 
  	<!-- UWB Communication -->
 	<node ns="$(arg uav_name)" respawn="true" pkg="uwb_reloc" type="uwb_talk_node" 
