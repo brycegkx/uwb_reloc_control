@@ -11,6 +11,8 @@
     <arg name="epsilon_2" default="0.07"/>
     <arg name="kappa" default="0.1"/>
 
+    <arg name="delta_t_est" default="0.04"/>
+
     <arg name="uniform_formation" default="true"/>
     <arg name="uniform_distance" default="3.0"/>
 
@@ -53,24 +55,26 @@
 		<param name="topic_px4PosSub" type="string" value="/$(arg uav_name)/estimate/position" />
 	</node>
 
-  	<!-- Relative Localization - Estimation -->
-    	<node respawn="true" pkg="uwb_reloc" type="reloc_algo_node" name="uwb_reloc_algo_node" output="log">
+    <!-- Relative Localization - Estimation -->
+        <node respawn="true" pkg="uwb_reloc" type="reloc_algo_node" name="uwb_reloc_algo_node" output="log">
         <param name="nodeRate" type="int" value="50"/>
         <param name="velNoise" type="double" value="0.2"/>
         <param name="addNoise" type="bool" value="false" />
         <param name="acc" type="double" value="3.0" />
         <param name="initCovariance" type="double" value="0.0001"/>
         <param name="Rd" type="double" value="0.05"/>
-        <param name="T" type="double" value="0.025"/>
+        <param name="T" type="double" value="$(arg delta_t_est)"/>
         <param name="logEnable" type="bool" value="true" />
-	</node>
+
+        <param name="topic_rlForControl" type="string" value="/$(arg uav_name)/rlForControl"/>
+    </node>
 
   	<!-- Relative Localization - Control -->
     <node pkg="uwb_reloc_control" type="uwb_reloc_control_node" name="uwb_reloc_control_$(arg uav_name)"
         required="true" clear_params="true" output="screen">
         <param name="uav_name" value="$(arg uav_name)" />
         <param name="uav_id" value="$(arg uav_id)" />
-        <param name="topic_sub_states" value="/rlForControl" />
+        <param name="topic_sub_states" value="/$(arg uav_name)/rlForControl" />
         <param name="topic_pub_vel_ctrl" value="/$(arg uav_name)/cmd_vel" />
         <param name="topic_pub_vel_cmd_common" value="/common/cmd_vel" />
 
