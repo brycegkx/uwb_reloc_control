@@ -51,6 +51,7 @@
 		<param name="logOutput" type="bool" value="true" />
 		<param name="syncFCC" type="bool" value="true" />
 
+        <param name="topic_uwbTalkPub" type="string" value="/$(arg uav_name)/uwb_talk" />
 		<param name="topic_px4VelSub" type="string" value="/$(arg uav_name)/estimate/velocity" />
 		<param name="topic_px4PosSub" type="string" value="/$(arg uav_name)/estimate/position" />
 	</node>
@@ -66,6 +67,7 @@
         <param name="T" type="double" value="$(arg delta_t_est)"/>
         <param name="logEnable" type="bool" value="true" />
 
+        <param name="topic_uwbTalkSub" type="string" value="/$(arg uav_name)/uwb_talk"/>
         <param name="topic_rlForControl" type="string" value="/$(arg uav_name)/rlForControl"/>
     </node>
 
