@@ -51,8 +51,9 @@
 		<param name="logOutput" type="bool" value="true" />
 		<param name="syncFCC" type="bool" value="true" />
 
-		<param name="topic_px4VelSub" type="string" value="/$(arg uav_name)/estimate/velocity" />
-		<param name="topic_px4PosSub" type="string" value="/$(arg uav_name)/estimate/position" />
+        <!-- <param name="topic_px4VelSub" type="string" value="/$(arg uav_name)/estimate/velocity" /> -->
+        <param name="topic_px4VelSub" type="string" value="/estimate/velocity" />
+        <param name="topic_px4PosSub" type="string" value="/$(arg uav_name)/estimate/position" />
 	</node>
 
     <!-- Relative Localization - Estimation -->
