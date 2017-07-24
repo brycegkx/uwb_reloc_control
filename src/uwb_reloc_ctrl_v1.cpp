@@ -41,6 +41,10 @@ double inter_stamp_timeout = 0.5; //sec
 double vel_cmd_lim_max[2] = {0.5, 0.5};
 double vel_cmd_lim_min[2] = {-0.5, -0.5};
 
+bool flag_nan_rel_pos = false;
+ros::Time last_warning_nan_rel_pos;
+double nan_notify_interval = 3.0; //sec
+
 //Subscribers and Publishers
 std::string topic_sub_states = "/common/vicon/uav_states";
 std::string topic_pub_vel_ctrl = "/uav_0/cmd_vel";
@@ -56,6 +60,7 @@ void calculate_control_setpoints();
 void reset_control_setpoints();
 void saturate_velocity_setpoints();
 void publish_velocity_commands();
+void notify_nan_relative_position();
 
 // Utility functions
 bool is_timeout(ros::Time stamp_1, ros::Time stamp_2, double timeout);
@@ -270,6 +275,7 @@ void calculate_control_setpoints(){
 					isnan(sum_rel_pos[1])) 
 				{
 					has_valid_control = false;
+					flag_nan_rel_pos = true;
 				}
 				else has_valid_control = true;
 			}
@@ -315,4 +321,12 @@ void publish_velocity_commands(){
 bool is_timeout(ros::Time stamp_1, ros::Time stamp_2, double timeout){
 	if (fabs(stamp_1.toSec() - stamp_2.toSec()) >= fabs(timeout)) return true;
 	else return false;
+}
+
+void notify_nan_relative_position(){
+	if (flag_nan_rel_pos == true && 
+		ros::Time::now().toSec() - last_warning_nan_rel_pos.toSec() > nan_notify_interval){
+		ROS_WARN("[RELOC CTRL] NaN relative position");
+		last_warning_nan_rel_pos = ros::Time::now();
+	}
 }
