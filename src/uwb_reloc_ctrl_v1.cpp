@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include <ros/ros.h>
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/PoseStamped.h>
@@ -113,8 +115,8 @@ void states_cb(const uwb_reloc_msgs::RelativeInfoStamped state){
 		othr_info.uav_id = rspdr_id;
 		othr_info.abs_vel = state.rspdrVel;
 		othr_info.rel_pos.x = state.rlpos_RqstToRspdr.x;
-    othr_info.rel_pos.y = state.rlpos_RqstToRspdr.y;
-    othr_info.rel_pos.z = state.rlpos_RqstToRspdr.z;
+    	othr_info.rel_pos.y = state.rlpos_RqstToRspdr.y;
+    	othr_info.rel_pos.z = state.rlpos_RqstToRspdr.z;
 		othr_info.distance = state.distance;
 
 		//Update self state
@@ -137,8 +139,8 @@ void states_cb(const uwb_reloc_msgs::RelativeInfoStamped state){
 		othr_info.uav_id = rqstr_id;
 		othr_info.abs_vel = state.rqstrVel;
 		othr_info.rel_pos.x = -state.rlpos_RqstToRspdr.x;
-    othr_info.rel_pos.y = -state.rlpos_RqstToRspdr.y;
-    othr_info.rel_pos.z = -state.rlpos_RqstToRspdr.z;
+    	othr_info.rel_pos.y = -state.rlpos_RqstToRspdr.y;
+    	othr_info.rel_pos.z = -state.rlpos_RqstToRspdr.z;
 		othr_info.distance = state.distance;
 
 		//Update self state
@@ -261,7 +263,15 @@ void calculate_control_setpoints(){
 				sum_rel_pos[0] += diff_sqr * othr_rel_pos[0];
 				sum_rel_pos[1] += diff_sqr * othr_rel_pos[1];
 
-				has_valid_control = true;
+				//Finally, check for NaN relative position
+				if (isnan(othr_rel_pos[0]) || 
+					isnan(othr_rel_pos[1]) ||
+					isnan(sum_rel_pos[0]) ||
+					isnan(sum_rel_pos[1])) 
+				{
+					has_valid_control = false;
+				}
+				else has_valid_control = true;
 			}
 		}
 	}
