@@ -6,6 +6,8 @@
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Pose.h>
 
+#include <sensor_msgs/Range.h>
+
 #include <uwb_reloc_msgs/RelativeInfoStamped.h>
 #include <uwb_reloc_msgs/TwistWithDistanceStamped.h>
 
@@ -69,11 +71,14 @@ double rc_signal_timeout = 1.0; //sec
 // Local position tracker
 geometry_msgs::PoseStamped curr_pose;
 double pose_timeout = 0.5; //sec
+sensor_msgs::Range curr_range;
+ros::Time last_range_time;
 
 //Subscribers and Publishers
 std::string topic_sub_states = "/common/vicon/uav_states";
 std::string topic_sub_auto_mode_rc = "/uav_0/mavros/rc/in";
 std::string topic_sub_local_pos = "/uav_0/mavros/local_position/pose";
+std::string topic_sub_range = "/uav_0/mavros/distance_sensor/hrlv_ez4_pub";
 
 std::string topic_pub_vel_ctrl = "/uav_0/cmd_vel";
 std::string topic_pub_vel_cmd_common = "/common/cmd_vel";
@@ -81,6 +86,7 @@ std::string topic_pub_vel_cmd_common = "/common/cmd_vel";
 ros::Subscriber sub_states;
 ros::Subscriber sub_rc;
 ros::Subscriber sub_pose;
+ros::Subscriber sub_range;
 ros::Publisher pub_vel_cmd;
 ros::Publisher pub_vel_cmd_common;
 
@@ -102,6 +108,7 @@ bool is_timeout(ros::Time stamp_1, ros::Time stamp_2, double timeout);
 void states_cb(const uwb_reloc_msgs::RelativeInfoStamped state);
 void rc_signal_cb(const mavros_msgs::RCIn rc_signals);
 void pose_cb(const geometry_msgs::PoseStamped _pose);
+void range_cb(const sensor_msgs::Range _range);
 
 int main(int argc, char** argv){
 	ros::init(argc, argv, node_name);
@@ -114,7 +121,8 @@ int main(int argc, char** argv){
 	nh_param.param<std::string>("topic_sub_states", topic_sub_states, topic_sub_states);
 	nh_param.param<std::string>("topic_sub_auto_mode_rc", topic_sub_auto_mode_rc, topic_sub_auto_mode_rc);
 	nh_param.param<std::string>("topic_sub_local_pos", topic_sub_local_pos, topic_sub_local_pos);
-  	nh_param.param<std::string>("topic_pub_vel_ctrl", topic_pub_vel_ctrl, topic_pub_vel_ctrl);
+	nh_param.param<std::string>("topic_sub_range", topic_sub_range, topic_sub_range);
+	nh_param.param<std::string>("topic_pub_vel_ctrl", topic_pub_vel_ctrl, topic_pub_vel_ctrl);
   	nh_param.param<std::string>("topic_pub_vel_cmd_common", topic_pub_vel_cmd_common, topic_pub_vel_cmd_common);
 	nh_param.param<double>("delta_t", delta_t, delta_t);
 	nh_param.param<double>("epsilon_1", epsilon_1, epsilon_1);
@@ -124,6 +132,7 @@ int main(int argc, char** argv){
 	nh_param.param<bool>("uniform_formation", uniform_formation, uniform_formation);
 	nh_param.param<double>("uniform_distance", uniform_distance, uniform_distance);
 
+	sub_range = nh.subscribe<sensor_msgs::Range>(topic_sub_range, 10, range_cb);
 	sub_states = nh.subscribe<uwb_reloc_msgs::RelativeInfoStamped>(topic_sub_states, 10, states_cb);
     sub_rc = nh.subscribe<mavros_msgs::RCIn>(topic_sub_auto_mode_rc, 10, rc_signal_cb);
     sub_pose = nh.subscribe<geometry_msgs::PoseStamped>(topic_sub_local_pos, 10, pose_cb);
@@ -246,6 +255,11 @@ void rc_signal_cb(const mavros_msgs::RCIn rc_signals){
 
 void pose_cb(const geometry_msgs::PoseStamped _pose){
     curr_pose = _pose;
+}
+
+void range_cb(const sensor_msgs::Range _range){
+	curr_range = _range;
+	last_range_time = ros::Time::now();
 }
 
 int initialize(){
@@ -382,10 +396,10 @@ void calculate_control_setpoints_xy(){
 }
 
 void calculate_control_setpoints_z(){
-    if (is_timeout(curr_pose.header.stamp, ros::Time::now(), pose_timeout)){
+    if (is_timeout(last_range_time, ros::Time::now(), pose_timeout)){
         vel_sp[2] = 0.0;
     } else {
-        double curr_altitude = curr_pose.pose.position.z;
+        double curr_altitude = curr_range.range;
         double altitude_error = target_altitude - curr_altitude;
         if (fabs(altitude_error) <= fabs(altitude_tolerance) ){
             vel_sp[2] = 0.0;
