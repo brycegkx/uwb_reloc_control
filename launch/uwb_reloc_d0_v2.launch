@@ -75,7 +75,7 @@
 
   	<!-- Relative Localization - Control -->
     <node ns="$(arg uav_name)" pkg="uwb_reloc_control" type="uwb_reloc_control_node_v2" 
-        name="uwb_reloc_control" required="true" clear_params="true" output="screen">
+        name="uwb_reloc_control_v2" required="true" clear_params="true" output="screen">
         <param name="uav_name"  value="$(arg uav_name)" />
         <param name="uav_id"    value="$(arg uav_id)" />
 

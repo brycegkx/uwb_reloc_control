@@ -61,8 +61,8 @@ int sub_mode_channel = 6;
 enum offb_sub_mode {mode_hov, mode_alt, mode_pos};
 offb_sub_mode last_mode;
 offb_sub_mode curr_mode;
-int thres_1 = 500;
-int thres_2 = 900;
+int thres_1 = 1000;
+int thres_2 = 1600;
 ros::Time last_rc_signal_time;
 double rc_signal_timeout = 1.0; //sec
 
