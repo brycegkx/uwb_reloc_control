@@ -57,7 +57,7 @@ ros::Time last_warning_nan_rel_pos;
 double nan_notify_interval = 3.0; //sec
 
 // Flight modes tracker
-uint mode_channel = 6;
+int sub_mode_channel = 6;
 enum offb_sub_mode {mode_hov, mode_alt, mode_pos};
 offb_sub_mode last_mode;
 offb_sub_mode curr_mode;
@@ -73,7 +73,7 @@ double pose_timeout = 0.5; //sec
 //Subscribers and Publishers
 std::string topic_sub_states = "/common/vicon/uav_states";
 std::string topic_sub_auto_mode_rc = "/uav_0/mavros/rc/in";
-std::string topic_sub_local_pos = "/uav_0/mavros/local_position";
+std::string topic_sub_local_pos = "/uav_0/mavros/local_position/pose";
 
 std::string topic_pub_vel_ctrl = "/uav_0/cmd_vel";
 std::string topic_pub_vel_cmd_common = "/common/cmd_vel";
@@ -110,7 +110,10 @@ int main(int argc, char** argv){
 
 	nh_param.param<std::string>("uav_name", uav_name, uav_name);
 	nh_param.param<int>("uav_id", uav_id, uav_id);
+	nh_param.param<int>("sub_mode_channel", sub_mode_channel, sub_mode_channel);
 	nh_param.param<std::string>("topic_sub_states", topic_sub_states, topic_sub_states);
+	nh_param.param<std::string>("topic_sub_auto_mode_rc", topic_sub_auto_mode_rc, topic_sub_auto_mode_rc);
+	nh_param.param<std::string>("topic_sub_local_pos", topic_sub_local_pos, topic_sub_local_pos);
   	nh_param.param<std::string>("topic_pub_vel_ctrl", topic_pub_vel_ctrl, topic_pub_vel_ctrl);
   	nh_param.param<std::string>("topic_pub_vel_cmd_common", topic_pub_vel_cmd_common, topic_pub_vel_cmd_common);
 	nh_param.param<double>("delta_t", delta_t, delta_t);
@@ -217,7 +220,7 @@ void states_cb(const uwb_reloc_msgs::RelativeInfoStamped state){
 }
 
 void rc_signal_cb(const mavros_msgs::RCIn rc_signals){
-    int rc_signal = rc_signals.channels[mode_channel];
+    int rc_signal = rc_signals.channels[sub_mode_channel];
     last_mode = curr_mode;
     if (rc_signal <= thres_1) curr_mode = mode_hov;
     else {
