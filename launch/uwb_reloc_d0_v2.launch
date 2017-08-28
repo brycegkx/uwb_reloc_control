@@ -115,7 +115,7 @@
     <node ns="$(arg uav_name)" pkg="mavros" type="mavros_node" name="mavros" 
     	required="true" clear_params="true" output="screen">
         <param name="fcu_url" value="/dev/px4:921600" />
-        <param name="gcs_url" value="udp://14550@192.168.0.102:14556" />
+        <param name="gcs_url" value="udp://14550@192.168.0.131:14556" />
         <param name="target_system_id" value="1" />
         <param name="target_component_id" value="1" />
 
