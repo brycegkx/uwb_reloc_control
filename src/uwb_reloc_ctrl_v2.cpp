@@ -73,6 +73,7 @@ geometry_msgs::PoseStamped curr_pose;
 double pose_timeout = 0.5; //sec
 sensor_msgs::Range curr_range;
 ros::Time last_range_time;
+double curr_altitude = 0.0;
 
 //Subscribers and Publishers
 std::string topic_sub_states = "/common/vicon/uav_states";
@@ -260,6 +261,9 @@ void pose_cb(const geometry_msgs::PoseStamped _pose){
 void range_cb(const sensor_msgs::Range _range){
 	curr_range = _range;
 	last_range_time = ros::Time::now();
+	if (curr_range.range > curr_range.min_range && curr_range.range < curr_range.max_range){
+		curr_altitude = curr_range.range;
+	}
 }
 
 int initialize(){
@@ -399,7 +403,6 @@ void calculate_control_setpoints_z(){
     if (is_timeout(last_range_time, ros::Time::now(), pose_timeout)){
         vel_sp[2] = 0.0;
     } else {
-        double curr_altitude = curr_range.range;
         double altitude_error = target_altitude - curr_altitude;
         if (fabs(altitude_error) <= fabs(altitude_tolerance) ){
             vel_sp[2] = 0.0;
