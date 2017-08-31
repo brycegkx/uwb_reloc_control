@@ -1,0 +1,20 @@
+<launch>
+    <master auto="start"/>
+
+    <node pkg="uwb_reloc_control" type="csv_parser" name="csv_parser"
+        required="true" clear_params="true" output="screen"/>
+
+    <!-- VISUALIZATION -->
+    <node pkg="uwb_reloc_control" type="uwb_reloc_visualization_node" name="uwb_reloc_viz"
+        required="true" clear_params="true" output="screen">
+        <param name="topic_sub_uav_info" value="/uwb_talk" />
+        <param name="topic_sub_uav_cmd" value="/common/cmd_vel" />
+        <param name="topic_pub_markers" value="/visualization_marker_array" />
+    </node>
+
+    <!-- RVIZ -->
+    <node pkg="tf" type="static_transform_publisher" name="world_to_baselink"
+        args="0 0 0 0 0 0 world base_link 100" output="log"/>
+    <node pkg="rviz" type="rviz" name="rviz" required="true" output="log"/>
+
+</launch>

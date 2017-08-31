@@ -1,0 +1,31 @@
+<launch>
+    <node pkg="rosbag" type="record" name="bag_all" output="screen" args="record
+        /uav_0/mavros/local_position/pose
+        /uav_0/mavros/local_position/velocity
+        /uav_0/mavros/global_position/local
+        /uav_0/mavros/global_position/compass_hdg
+        /uav_0/mavros/local_position/pose
+        /uav_0/mavros/local_position/velocity
+        /uav_0/mavros/setpoint_velocity/cmd_vel
+        /uav_0/rlForControl
+        /uav_0/uwb_talk
+        /uav_1/mavros/local_position/pose
+        /uav_1/mavros/local_position/velocity
+        /uav_1/mavros/global_position/local
+        /uav_1/mavros/global_position/compass_hdg
+        /uav_1/mavros/local_position/pose
+        /uav_1/mavros/local_position/velocity
+        /uav_1/mavros/setpoint_velocity/cmd_vel
+        /uav_1/rlForControl
+        /uav_1/uwb_talk
+        /uav_2/mavros/local_position/pose
+        /uav_2/mavros/local_position/velocity
+        /uav_2/mavros/global_position/local
+        /uav_2/mavros/global_position/compass_hdg
+        /uav_2/mavros/local_position/pose
+        /uav_2/mavros/local_position/velocity
+        /uav_2/mavros/setpoint_velocity/cmd_vel
+        /uav_2/rlForControl
+        /uav_2/uwb_talk"
+    />
+</launch>
